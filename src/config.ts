@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import bunyan from 'bunyan';
+import cloudinary from 'cloudinary';
 
 dotenv.config();
 
@@ -13,13 +14,25 @@ export const config = {
   SECRET_KEY_TWO: process.env.SECRET_KEY_TWO as string | undefined,
   CLIENT_URL: process.env.CLIENT_URL as string | undefined,
   REDIS_HOST: process.env.REDIS_HOST as string | undefined,
+  CLOUDINARY_NAME: process.env.CLOUDINARY_NAME as string | undefined,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string | undefined,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string | undefined,
 
   createLogger,
 
+  // test for missing env variables
   validateConfig() {
     const undefinedKeys = Object.keys(config).filter((key) => config[key as keyof typeof config] === undefined);
     if (undefinedKeys.length > 0) {
       throw new Error(`Undefined or missing environment variables: ${undefinedKeys.join(', ')}`);
     }
+  },
+
+  cloudinaryConfig(): void {
+    cloudinary.v2.config({
+      cloud_name: process.env.CLOUDINARY_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET
+    });
   }
 };
