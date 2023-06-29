@@ -18,8 +18,8 @@ export const getUserByUsernameOrEmail = async (username: string, email: string):
   return user;
 };
 
+// find the record associated with the given username argument - true if found
 export const getAuthUserByUsername = async (username: string): Promise<IAuthDocument> => {
-  // find matching record, true if found
   const user: IAuthDocument = (await AuthModel.findOne({
     username: Helpers.firstLetterUppercase(username)
   }).exec()) as IAuthDocument;
