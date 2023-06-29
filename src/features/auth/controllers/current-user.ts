@@ -5,7 +5,7 @@ import { Request, Response } from 'express';
 
 const userCache: UserCache = UserCache();
 
-// get the current user and session
+// get the current user and session...
 export const CurrentUser = async (req: Request, res: Response) => {
   let isUser = false;
   let token = null;
