@@ -46,7 +46,7 @@ export const createSignUp = async (req: Request, res: Response): Promise<void> =
   const userObjectId: ObjectId = new ObjectId();
   const uId = `${generateRandomIntegers(12)}`;
 
-  // Create an authentication document using `signupData` function to format the data
+  // Create an "authentication" document using `signupData` function to format the data
   const authData: IAuthDocument = signupData({
     _id: authObjectId,
     uId,
@@ -62,7 +62,7 @@ export const createSignUp = async (req: Request, res: Response): Promise<void> =
     throw new BadRequestError('File upload error occurred');
   }
 
-  // Create user document passing user data into userData function
+  // Create "user" document using `userData` function
   const userDataForCache: IUserDocument = userData(authData, userObjectId);
 
   // Set profiePicture property to `userDataForCache` object
@@ -86,6 +86,7 @@ export const createSignUp = async (req: Request, res: Response): Promise<void> =
 
   res
     .status(HTTP_STATUS.CREATED)
+    // display reponse message and data as `user` and `token`
     .json({ message: 'User created successfully', user: userDataForCache, token: userJwt });
 };
 

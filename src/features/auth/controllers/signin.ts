@@ -11,8 +11,8 @@ import { userService } from '@service/db/user.service';
 
 export const SignIn = async (req: Request, res: Response): Promise<void> => {
   const { username, password } = req.body;
-
   const existingUser: IAuthDocument = await getAuthUserByUsername(username);
+
   if (!existingUser) {
     throw new BadRequestError('Invalid Credentials.');
   }

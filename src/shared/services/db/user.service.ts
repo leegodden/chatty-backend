@@ -6,7 +6,7 @@ export const addUserData = async (data: IUserDocument): Promise<void> => {
   await UserModel.create(data);
 };
 
-// get user by id from mongodb
+// get user document associated with the given userId argument
 async function getUserById(userId: string): Promise<IUserDocument> {
   const users: IUserDocument[] = await UserModel.aggregate([
     { $match: { _id: new mongoose.Types.ObjectId(userId) } },
