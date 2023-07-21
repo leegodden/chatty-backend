@@ -17,6 +17,10 @@ export const config = {
   CLOUDINARY_NAME: process.env.CLOUDINARY_NAME as string | undefined,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string | undefined,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string | undefined,
+  SENDER_EMAIL: process.env.SENDER_EMAIL as string | undefined,
+  SENDER_EMAIL_PASSWORD: process.env.SENDER_EMAIL_PASSWORD as string | undefined,
+  SENDGRID_API_KEY: process.env.SENDGRID_API_KEY as string | undefined,
+  SENDGRID_SENDER: process.env.SENDGRID_SENDER as string | undefined,
 
   createLogger,
 

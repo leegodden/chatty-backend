@@ -2,7 +2,8 @@ import { ObjectId } from 'mongodb';
 import { Request, Response } from 'express';
 import { signupSchema } from '@auth/schemas/signup';
 import { IAuthDocument, ISignUpData } from '@auth/interfaces/auth.interface';
-import { BadRequestError } from 'src/shared/globals/helpers/error-handler';
+import { BadRequestError } from '@global/helpers/error-handler';
+
 import { getUserByUsernameOrEmail } from '@service/db/auth.service';
 import { generateRandomIntegers } from '@global/helpers/helpers';
 import { Helpers } from '@global/helpers/helpers';
@@ -10,7 +11,7 @@ import { UploadApiResponse } from 'cloudinary';
 import { uploads } from '@global/helpers/cloudinary-uploads';
 import HTTP_STATUS from 'http-status-codes';
 import { IUserDocument } from '@user/interfaces/user.interface';
-import UserCache from '@service/redis/user.cache';
+import UserCache, { saveUserToCache } from '@service/redis/user.cache';
 //import { omit } from 'lodash';
 import { addAuthUserJob } from '@service/queues/auth.queue';
 import { addUserJob } from '@service/queues/user.queue';
@@ -42,6 +43,7 @@ export const createSignUp = async (req: Request, res: Response): Promise<void> =
     throw new BadRequestError('A user with that username or email already exists.');
   }
 
+  // use ObjectId class from mongodb to generate unique id's for auth and user
   const authObjectId: ObjectId = new ObjectId();
   const userObjectId: ObjectId = new ObjectId();
   const uId = `${generateRandomIntegers(12)}`;
@@ -69,15 +71,15 @@ export const createSignUp = async (req: Request, res: Response): Promise<void> =
   userDataForCache.profilePicture = `https://res.cloudinary.com/leegodden/image/upload/v${result.version}/${userObjectId}`;
 
   // Save user data to Redis cache
-  await userCache.saveUserToCache(`${userObjectId}`, uId, userDataForCache);
+  await saveUserToCache(`${userObjectId}`, uId, userDataForCache);
 
   // Omit unwanted fields  with lodash
   //omit(userDataForCache, ['uId', 'username', 'email', 'avatarColor', 'password']);
 
-  // Add `job` to "auth" queue to add auth user to database
+  // Add.. `job` to "auth" queue to add auth user to database
   addAuthUserJob('addAuthUserToDB', { value: authData });
 
-  // Add `job` to "user" queue to add the user data to the database.
+  // Add `job` to "user" queue to add user to database.
   addUserJob('addUserToDB', { value: userDataForCache });
 
   // add user data to the session.

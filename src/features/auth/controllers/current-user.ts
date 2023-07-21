@@ -1,9 +1,9 @@
 import { userService } from '@service/db/user.service';
-import UserCache from '@service/redis/user.cache';
+import { getUserFromCache } from '@service/redis/user.cache';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import { Request, Response } from 'express';
 
-const userCache: UserCache = UserCache();
+//const userCache: UserCache = UserCache();
 
 // get the current user and session...
 export const CurrentUser = async (req: Request, res: Response) => {
@@ -11,7 +11,7 @@ export const CurrentUser = async (req: Request, res: Response) => {
   let token = null;
   let user = null;
 
-  const cachedUser: IUserDocument = (await userCache.getUserFromCache(`${req.currentUser!.userId}`)) as IUserDocument;
+  const cachedUser: IUserDocument = (await getUserFromCache(`${req.currentUser!.userId}`)) as IUserDocument;
   const existingUser: IUserDocument = cachedUser
     ? cachedUser
     : await userService.getUserById(`${req.currentUser!.userId}`);

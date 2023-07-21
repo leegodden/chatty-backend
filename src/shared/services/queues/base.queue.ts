@@ -10,6 +10,10 @@ import { ExpressAdapter } from '@bull-board/express';
 import { BullAdapter } from '@bull-board/api/bullAdapter';
 import { createBullBoard } from '@bull-board/api';
 import { config } from '@root/config';
+import { IAuthJob } from '@auth/interfaces/auth.interface';
+import { IEmailJob, IUserJob } from '@user/interfaces/user.interface';
+
+type IBaseJobData = IAuthJob | IEmailJob | IUserJob;
 
 let bullAdapters: BullAdapter[] = [];
 
@@ -28,8 +32,9 @@ export const getServerAdapter = (): ExpressAdapter => {
   return serverAdapter;
 };
 
+// Create the queue
 export const BaseQueue = (queueName: string) => {
-  const queue: Queue.Queue = new Queue(queueName, `${config.REDIS_HOST}`);
+  const queue = new Queue(queueName, `${config.REDIS_HOST}`);
   let log: Logger;
 
   bullAdapters.push(new BullAdapter(queue));
@@ -52,11 +57,12 @@ export const BaseQueue = (queueName: string) => {
     log.info(`Job ${jobId} is stalled`);
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const addJob = (name: string, data: any) => {
+  // Add Jobs
+  const addJob = (name: string, data: IBaseJobData) => {
     queue.add(name, data, { attempts: 3, backoff: { type: 'fixed', delay: 5000 } });
   };
 
+  // Process Jobs
   const processJob = (name: string, concurrency: number, callback: Queue.ProcessCallbackFunction<void>): void => {
     queue.process(name, concurrency, callback);
   };

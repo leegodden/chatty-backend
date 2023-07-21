@@ -8,6 +8,8 @@ const addAuthUserJob = (name: string, data: IAuthJob): void => {
   AuthQueue.addJob(name, data);
 };
 
+//console.log(typeof AuthQueue.processJob);
+
 AuthQueue.processJob('addAuthUserToDB', 5, authWorker.addAuthUserToDB);
 
 export { addAuthUserJob };

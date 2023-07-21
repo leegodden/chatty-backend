@@ -5,22 +5,17 @@ import { createAuthUser } from '@service/db/auth.service';
 
 const log: Logger = config.createLogger('authWorker');
 
-function addAuthUserToDB(job: Job, done: DoneCallback): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
+async function addAuthUserToDB(job: Job, done: DoneCallback): Promise<void> {
+  try {
     const { value } = job.data;
-
-    createAuthUser(value)
-      .then(() => {
-        job.progress(100);
-        done(null, job.data);
-        resolve();
-      })
-      .catch((error) => {
-        log.error(error);
-        done(error as Error);
-        reject(error);
-      });
-  });
+    await createAuthUser(value);
+    job.progress(100);
+    done(null, job.data);
+  } catch (error) {
+    log.error(error);
+    done(error as Error);
+    throw error;
+  }
 }
 
 const authWorker = {
